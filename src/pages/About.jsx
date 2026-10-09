@@ -122,13 +122,30 @@ export default function About() {
 
       <div className="team-grid">
         {team.map((member) => {
-          const imgUrl = member.foto.startsWith('http')
-            ? member.foto
-            : `http://localhost:5000${member.foto}`;
+          const getImageUrl = (foto) => {
+            if (!foto) return 'https://via.placeholder.com/150';
+
+            // Si ya es una URL web completa (http / https)
+            if (foto.startsWith('http://') || foto.startsWith('https://')) {
+              return foto;
+            }
+
+            // Si es una ruta relativa de la carpeta uploads
+            const cleanPath = foto.startsWith('/') ? foto : `/${foto}`;
+            return `https://biblioteca-backend-9c1i.onrender.com${cleanPath}`;
+          };
 
           return (
             <div key={member._id} className="team-card">
-              <img src={imgUrl} alt={member.nombre} className="team-avatar" />
+              <img
+                src={getImageUrl(member.foto)}
+                alt={member.nombre}
+                className="team-photo"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(member.nombre) + '&background=random';
+                }}
+              />
               <h3>{member.nombre}</h3>
               <p className="team-role">{member.cargo}</p>
               {user?.role === 'admin' && (
