@@ -74,16 +74,31 @@ export default function About() {
     }
   };
 
+  // Construcción segura de la URL de la imagen
+  const getImageUrl = (member) => {
+    const path = member.foto || member.fotoUrl;
+    if (!path) return `https://ui-avatars.com/api/?name=${encodeURIComponent(member.nombre || 'User')}&background=random`;
+
+    // Si ya es una URL completa (http / https)
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+
+    // Si es una ruta almacenada en el backend
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    return `https://biblioteca-backend-9c1i.onrender.com${cleanPath}`;
+  };
+
   return (
     <div className="about-container">
       <header className="about-header">
-        <h2>Nuestro Equipo de Biblioteca</h2>
-        <p>Conoce a los estudiantes y auxiliares que hacen posible este espacio</p>
+        <h2>Quiénes Somos</h2>
+        <p>Conoce al equipo encargado del mantenimiento y gestión de la Biblioteca Escolar</p>
       </header>
 
       {error && <div className="admin-alert alert-danger">{error}</div>}
 
-      {/* Formulario solo accesible para administradores */}
+      {/* Formulario accesible solo para administradores */}
       {user?.role === 'admin' && (
         <form onSubmit={handleAddMember} className="add-team-form">
           <h3>➕ Agregar Integrante del Equipo</h3>
@@ -104,14 +119,16 @@ export default function About() {
             />
             <input
               type="url"
-              placeholder="URL de foto o sube archivo"
+              placeholder="URL de foto externa"
               value={fotoUrl}
               onChange={(e) => setFotoUrl(e.target.value)}
+              disabled={!!file}
             />
             <input
               type="file"
               accept="image/*"
               onChange={(e) => setFile(e.target.files[0])}
+              disabled={!!fotoUrl}
             />
             <button type="submit" className="btn-primary" disabled={loading}>
               {loading ? 'Guardando...' : 'Guardar'}
@@ -120,42 +137,30 @@ export default function About() {
         </form>
       )}
 
+      {/* Grid de integrantes */}
       <div className="team-grid">
-        {team.map((member) => {
-          const getImageUrl = (foto) => {
-            if (!foto) return 'https://via.placeholder.com/150';
-
-            // Si ya es una URL web completa (http / https)
-            if (foto.startsWith('http://') || foto.startsWith('https://')) {
-              return foto;
-            }
-
-            // Si es una ruta relativa de la carpeta uploads
-            const cleanPath = foto.startsWith('/') ? foto : `/${foto}`;
-            return `https://biblioteca-backend-9c1i.onrender.com${cleanPath}`;
-          };
-
-          return (
-            <div key={member._id} className="team-card">
+        {team.map((member) => (
+          <div key={member._id} className="team-card">
+            <div className="team-photo-wrapper">
               <img
-                src={getImageUrl(member.foto)}
+                src={getImageUrl(member)}
                 alt={member.nombre}
                 className="team-photo"
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(member.nombre) + '&background=random';
+                  e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.nombre)}&background=random`;
                 }}
               />
-              <h3>{member.nombre}</h3>
-              <p className="team-role">{member.cargo}</p>
-              {user?.role === 'admin' && (
-                <button onClick={() => handleDelete(member._id)} className="btn-delete-small">
-                  Eliminar
-                </button>
-              )}
             </div>
-          );
-        })}
+            <h3 className="team-name">{member.nombre}</h3>
+            <p className="team-role">{member.cargo}</p>
+            {user?.role === 'admin' && (
+              <button onClick={() => handleDelete(member._id)} className="btn-delete-small">
+                Eliminar
+              </button>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

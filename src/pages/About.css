@@ -1,89 +1,68 @@
+/* Contenedor principal de la sección */
 .about-container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 32px 20px;
-}
-
-.about-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.about-header h2 {
-  font-size: 32px;
-  color: var(--text-primary);
-}
-
-.about-header p {
-  color: var(--text-secondary);
-}
-
-.add-team-form {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
   padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 32px;
 }
 
-.form-row {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.form-row input {
-  flex: 1;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid var(--border-color);
-  background: var(--input-bg);
-  color: var(--text-primary);
-}
-
+/* Grid de tarjetas responsivo */
 .team-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 24px;
+  gap: 20px;
+  margin-top: 25px;
 }
 
+/* Tarjeta individual */
 .team-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: #ffffff;
   border-radius: 12px;
   padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  overflow: hidden; /* Evita que la imagen sobresalga */
 }
 
-.team-avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
+/* 🔴 LO MÁS IMPORTANTE: Tamaño y recorte de la imagen */
+.team-photo {
+  width: 120px;
+  height: 120px;
+  object-fit: cover; /* Recorta la imagen proporcionalmente sin deformarla */
+  border-radius: 50%; /* Hace la foto circular (puedes usar 8px para bordes redondeados) */
   margin-bottom: 12px;
-  border: 3px solid var(--primary-color);
+  border: 3px solid #e2e8f0;
 }
 
-.team-card h3 {
-  margin: 0 0 4px 0;
-  font-size: 18px;
-  color: var(--text-primary);
+/* Textos dentro de la tarjeta */
+.team-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 8px 0 4px 0;
 }
 
 .team-role {
-  margin: 0 0 12px 0;
-  color: var(--primary-color);
-  font-weight: 600;
-  font-size: 14px;
+  font-size: 0.9rem;
+  color: #2563eb;
+  font-weight: 500;
+  margin-bottom: 15px;
 }
 
-.btn-delete-small {
+/* Botón de eliminar */
+.btn-delete {
   background-color: #ef4444;
   color: white;
   border: none;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
+  padding: 6px 16px;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.btn-delete:hover {
+  background-color: #dc2626;
 }
