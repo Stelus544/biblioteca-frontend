@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://biblioteca-backend-9c1i.onrender.com/', // Cambia esto a la URL de tu backend
 });
 
 // Interceptor para enviar el token JWT guardado en localStorage
