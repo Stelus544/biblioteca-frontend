@@ -1,0 +1,102 @@
+.my-loans-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.my-loans-header h2 {
+  margin: 0 0 4px 0;
+  font-size: 28px;
+  color: #0f172a;
+}
+
+.my-loans-header p {
+  margin: 0 0 24px 0;
+  color: #64748b;
+  font-size: 15px;
+}
+
+.loans-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.loan-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.loan-book-img {
+  width: 70px;
+  height: 95px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.loan-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-grow: 1;
+}
+
+.loan-details h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.loan-date {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.loan-status-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-badge.pendiente {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.status-badge.aprobado {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.status-badge.rechazado {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+  background-color: #f8fafc;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+}
