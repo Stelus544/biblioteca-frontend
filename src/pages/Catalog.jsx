@@ -26,7 +26,6 @@ export default function Catalog() {
     }
   };
 
-  // Función corregida para procesar la solicitud de préstamo
   const handleRequestLoan = async (bookId) => {
     try {
       const token = localStorage.getItem('token');
@@ -36,7 +35,6 @@ export default function Catalog() {
         return;
       }
 
-      // Configuración con el encabezado de autenticación JWT
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -44,24 +42,23 @@ export default function Catalog() {
         }
       };
 
-      // Compatibilidad con los campos que pueda requerir req.body en la API
+      // Se envían todas las variantes de nombres de propiedad posibles para garantizar compatibilidad con loanRoutes.js
       const body = {
         bookId: bookId,
         libroId: bookId,
-        libro: bookId
+        libro: bookId,
+        userId: user?._id || user?.id,
+        usuario: user?._id || user?.id
       };
 
       const res = await API.post('/loans', body, config);
 
-      alert(res.data?.mensaje || '✅ ¡Solicitud de préstamo realizada con éxito!');
-      fetchBooks(); // Actualiza el catálogo para refrescar el stock disponible
+      alert(res.data?.mensaje || res.data?.message || '✅ ¡Solicitud de préstamo realizada con éxito!');
+      fetchBooks();
     } catch (err) {
-      console.error('Error al solicitar préstamo:', err);
-      const mensajeError = 
-        err.response?.data?.mensaje || 
-        err.response?.data?.error || 
-        'No se pudo procesar la solicitud de préstamo.';
-      alert(`⚠️ Error: ${mensajeError}`);
+      console.error('Error detallado al solicitar préstamo:', err);
+      const msg = err.response?.data?.mensaje || err.response?.data?.error || err.response?.data?.message || 'No se pudo procesar la solicitud de préstamo.';
+      alert(`⚠️ ${msg}`);
     }
   };
 
@@ -76,13 +73,11 @@ export default function Catalog() {
     }
   };
 
-  // Obtención segura de las existencias del libro
   const getBookStock = (book) => {
     const count = book.ejemplares ?? book.copias ?? book.stock ?? 0;
     return parseInt(count, 10);
   };
 
-  // Helper para construir la URL de la portada en Render o URLs externas
   const getBookCoverUrl = (book) => {
     const rawPath = book?.portada || book?.portadaUrl || book?.imagen;
     if (!rawPath) return 'https://via.placeholder.com/150x200?text=Sin+Portada';
