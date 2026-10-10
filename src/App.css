@@ -10,24 +10,60 @@
   --primary-hover: #1d4ed8;
 }
 
+/* ==========================================
+   VARIABLES Y TRANSICIÓN SUAVE MODO OSCURO
+   ========================================== */
+
+/* Transición fluida para todo el documento */
+* {
+  transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+/* VARIABLES MODO CLARO */
+body.light {
+  --bg-color: #f8fafc;
+  --navbar-bg: #ffffff;
+  --card-bg: #ffffff;
+  --text-color: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --hover-bg: #f1f5f9;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* VARIABLES MODO OSCURO */
 body.dark {
-  --bg-primary: #0f172a;
-  --bg-card: #1e293b;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
+  --bg-color: #0f172a;
+  --navbar-bg: #1e293b;
+  --card-bg: #1e293b;
+  --text-color: #f8fafc;
+  --text-muted: #cbd5e1;
   --border-color: #334155;
-  --input-bg: #0f172a;
-  --primary-color: #3b82f6;
-  --primary-hover: #60a5fa;
+  --hover-bg: #334155;
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
-  margin: 0;
+/* Estilos de compatibilidad para modo oscuro */
+body.dark input,
+body.dark select,
+body.dark textarea {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
 }
 
+body.dark .team-card,
+body.dark .add-team-form,
+body.dark .book-card {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+body.dark h1, body.dark h2, body.dark h3, body.dark h4, body.dark strong {
+  color: #ffffff !important;
+}
 /* Botón de Modo Oscuro */
 .theme-toggle-btn {
   background: var(--input-bg);

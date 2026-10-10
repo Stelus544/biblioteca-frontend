@@ -1,60 +1,81 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './Navbar.css';
 
-export default function Navbar() {
-  const { user, logout } = useContext(AuthContext);
+export default function Navbar({ theme, toggleTheme }) {
+  const auth = useContext(AuthContext);
+  const user = auth?.user;
+  const logout = auth?.logout;
   const navigate = useNavigate();
-  const [darkMode, setDarkMode] = useState(
-    localStorage.getItem('theme') === 'dark'
-  );
+  const location = useLocation();
 
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.body.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [darkMode]);
+  const handleLogout = () => {
+    if (logout) logout();
+    navigate('/login');
+  };
+
+  const isActive = (path) => (location.pathname === path ? 'active-link' : '');
 
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <Link to={user ? (user.role === 'admin' ? '/admin' : '/catalog') : '/login'} className="navbar-brand">
-         Biblioteca Escolar
+        {/* LOGO */}
+        <Link to="/catalog" className="navbar-brand">
+          <span className="brand-icon">📚</span>
+          <span className="brand-text">Biblioteca<span className="brand-accent">Escolar</span></span>
         </Link>
 
-        <div className="navbar-menu">
-          <Link to="/about" className="nav-link">Quiénes Somos</Link>
-
+        {/* ENLACES DE NAVEGACIÓN */}
+        <div className="navbar-links">
+          <Link to="/catalog" className={`nav-link ${isActive('/catalog')}`}>
+            Catálogo
+          </Link>
+          <Link to="/about" className={`nav-link ${isActive('/about')}`}>
+            Quiénes Somos
+          </Link>
+          
+          {/* Pestaña Mis Préstamos para cualquier usuario logueado */}
           {user && (
-            <>
-              {user.role === 'admin' ? (
-                <Link to="/admin" className="nav-link">Panel Admin</Link>
-              ) : (
-                <>
-                  <Link to="/catalog" className="nav-link">Catálogo</Link>
-                  <Link to="/my-loans" className="nav-link">Mis Préstamos</Link>
-                </>
-              )}
-            </>
+            <Link to="/my-loans" className={`nav-link ${isActive('/my-loans')}`}>
+              Mis Préstamos
+            </Link>
           )}
 
-          <button onClick={() => setDarkMode(!darkMode)} className="theme-toggle-btn">
-            {darkMode ? '☀️ Claro' : '🌙 Oscuro'}
+          {/* Panel Admin solo si el rol es admin */}
+          {(user?.role === 'admin' || user?.rol === 'admin') && (
+            <Link to="/admin" className={`nav-link ${isActive('/admin')}`}>
+              Panel Admin
+            </Link>
+          )}
+        </div>
+
+        {/* USUARIO Y ACCIONES */}
+        <div className="navbar-actions">
+          {/* BOTÓN MODO CLARO / OSCURO */}
+          <button 
+            onClick={toggleTheme} 
+            className="theme-toggle-btn" 
+            type="button" 
+            title="Cambiar tema"
+          >
+            {theme === 'dark' ? '☀️ Claro' : '🌙 Oscuro'}
           </button>
 
-          {user && (
-            <div className="user-info">
-              <span className="user-name">{user.nombre}</span>
-              <span className="user-badge">{user.role === 'admin' ? 'Admin' : user.curso}</span>
-              <button onClick={() => { logout(); navigate('/login'); }} className="btn-logout">
+          {user ? (
+            <div className="user-profile">
+              <span className="user-name">{user.nombre || user.email || 'Usuario'}</span>
+              {(user.role === 'admin' || user.rol === 'admin') && (
+                <span className="admin-badge">Admin</span>
+              )}
+              <button onClick={handleLogout} className="btn-logout" type="button">
                 Salir
               </button>
             </div>
+          ) : (
+            <Link to="/login" className="btn-login-link">
+              Iniciar Sesión
+            </Link>
           )}
         </div>
       </div>
