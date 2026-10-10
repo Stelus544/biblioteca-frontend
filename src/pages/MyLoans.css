@@ -8,12 +8,12 @@
 .my-loans-header h2 {
   margin: 0 0 4px 0;
   font-size: 28px;
-  color: #0f172a;
+  color: var(--text-color, #0f172a);
 }
 
 .my-loans-header p {
   margin: 0 0 24px 0;
-  color: #64748b;
+  color: var(--text-muted, #64748b);
   font-size: 15px;
 }
 
@@ -24,8 +24,8 @@
 }
 
 .loan-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -51,13 +51,13 @@
 .loan-details h3 {
   margin: 0;
   font-size: 18px;
-  color: #0f172a;
+  color: var(--text-color, #0f172a);
 }
 
 .loan-date {
   margin: 0;
   font-size: 13px;
-  color: #64748b;
+  color: var(--text-muted, #64748b);
 }
 
 .loan-status-wrapper {
@@ -96,7 +96,7 @@
   text-align: center;
   padding: 40px;
   color: #64748b;
-  background-color: #f8fafc;
+  background-color: var(--card-bg, #f8fafc);
   border-radius: 12px;
   border: 1px dashed #cbd5e1;
 }

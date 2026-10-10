@@ -46,7 +46,7 @@
 }
 
 .tab-btn:hover {
-  color: #f8fafc;
+  color: #4d3a90;
 }
 
 .tab-btn.active {
@@ -91,7 +91,7 @@
 .admin-table td {
   padding: 14px 16px;
   border-bottom: 1px solid #334155;
-  color: #f8fafc !important; /* TEXTO BLANCO TOTALMENTE VISIBLE */
+  color: #565d63 !important; /* TEXTO BLANCO TOTALMENTE VISIBLE */
   font-size: 0.92rem;
   font-weight: 500;
   vertical-align: middle;
@@ -121,7 +121,7 @@
 .form-group label {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #f8fafc !important; /* ETIQUETAS VISIBLES */
+  color: #514d51 !important; /* ETIQUETAS VISIBLES */
 }
 
 .form-group input[type="text"],

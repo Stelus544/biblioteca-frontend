@@ -9,6 +9,14 @@ export default function Catalog() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // Estados para el cuadro modal personalizado
+  const [modal, setModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'success' // 'success' o 'error'
+  });
+
   useEffect(() => {
     fetchBooks();
   }, []);
@@ -31,7 +39,12 @@ export default function Catalog() {
       const token = localStorage.getItem('token');
       
       if (!token) {
-        alert('Debes iniciar sesión para solicitar un libro');
+        setModal({
+          isOpen: true,
+          title: 'Acceso requerido',
+          message: 'Debes iniciar sesión para solicitar un libro.',
+          type: 'error'
+        });
         return;
       }
 
@@ -42,7 +55,6 @@ export default function Catalog() {
         }
       };
 
-      // Se envían todas las variantes de nombres de propiedad posibles para garantizar compatibilidad con loanRoutes.js
       const body = {
         bookId: bookId,
         libroId: bookId,
@@ -53,13 +65,31 @@ export default function Catalog() {
 
       const res = await API.post('/loans', body, config);
 
-      alert(res.data?.mensaje || res.data?.message || '✅ ¡Solicitud de préstamo realizada con éxito!');
+      // Mostrar modal de éxito personalizado
+      setModal({
+        isOpen: true,
+        title: '¡Solicitud Exitosa!',
+        message: res.data?.mensaje || res.data?.message || 'Tu solicitud se ha enviado y está pendiente de aprobación.',
+        type: 'success'
+      });
+
       fetchBooks();
     } catch (err) {
       console.error('Error detallado al solicitar préstamo:', err);
       const msg = err.response?.data?.mensaje || err.response?.data?.error || err.response?.data?.message || 'No se pudo procesar la solicitud de préstamo.';
-      alert(`⚠️ ${msg}`);
+      
+      // Mostrar modal de error personalizado
+      setModal({
+        isOpen: true,
+        title: 'No se pudo completar',
+        message: msg,
+        type: 'error'
+      });
     }
+  };
+
+  const closeModal = () => {
+    setModal({ isOpen: false, title: '', message: '', type: 'success' });
   };
 
   const handleDeleteBook = async (bookId) => {
@@ -69,7 +99,12 @@ export default function Catalog() {
       fetchBooks();
     } catch (err) {
       console.error('Error al eliminar libro:', err);
-      alert('Error al intentar eliminar el libro.');
+      setModal({
+        isOpen: true,
+        title: 'Error',
+        message: 'No se pudo intentar eliminar el libro.',
+        type: 'error'
+      });
     }
   };
 
@@ -156,6 +191,22 @@ export default function Catalog() {
           <p className="no-books">No hay libros registrados en el catálogo.</p>
         )}
       </div>
+
+      {/* 🟢 CUADRO MODAL PERSONALIZADO */}
+      {modal.isOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className={`modal-icon ${modal.type}`}>
+              {modal.type === 'success' ? '✅' : '⚠️'}
+            </div>
+            <h3>{modal.title}</h3>
+            <p>{modal.message}</p>
+            <button className="modal-btn" onClick={closeModal}>
+              Aceptar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
