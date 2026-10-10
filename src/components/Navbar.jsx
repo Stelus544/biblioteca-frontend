@@ -22,7 +22,7 @@ export default function Navbar({ theme, toggleTheme }) {
       <div className="navbar-container">
         {/* LOGO */}
         <Link to="/catalog" className="navbar-brand">
-          <span className="brand-icon">📚</span>
+          <span className="brand-icon"></span>
           <span className="brand-text">Biblioteca<span className="brand-accent">Escolar</span></span>
         </Link>
 
@@ -59,7 +59,7 @@ export default function Navbar({ theme, toggleTheme }) {
             type="button" 
             title="Cambiar tema"
           >
-            {theme === 'dark' ? '☀️ Claro' : '🌙 Oscuro'}
+            {theme === 'dark' ? '☀️' : '🌙'}
           </button>
 
           {user ? (

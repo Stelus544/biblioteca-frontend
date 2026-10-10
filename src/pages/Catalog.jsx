@@ -163,7 +163,7 @@ export default function Catalog() {
 
                 <div className="book-info">
                   <h3 className="book-title">{book.titulo}</h3>
-                  <p className="book-author">{book.autor}</p>
+                  <p className="book-author">{book.sinopsis}</p>
                 </div>
 
                 <div className="book-actions">
