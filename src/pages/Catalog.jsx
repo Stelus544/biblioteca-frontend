@@ -84,8 +84,8 @@ export default function Catalog() {
     setCurrentBook({
       _id: book._id,
       titulo: book.titulo || '',
-      autor: book.autor || '', // 🟢 Captura correctamente el autor del libro
-      descripcion: book.descripcion || book.sinopsis || '', // 🟢 Captura la sinopsis/descripción
+      autor: book.autor || '',
+      descripcion: book.descripcion || book.sinopsis || '',
       categoria: isCustom ? 'Otro' : (book.categoria || 'Literatura'),
       customCategoria: isCustom ? book.categoria : '',
       clasificacion: book.clasificacion || '',
@@ -126,21 +126,18 @@ export default function Catalog() {
 
   const getBookStock = (book) => parseInt(book.stock ?? book.ejemplares ?? book.copias ?? 0, 10);
 
-const getBookCoverUrl = (book) => {
+  // 🟢 FUNCIÓN CORREGIDA PARA LAS PORTADAS
+  const getBookCoverUrl = (book) => {
     const rawPath = book?.portada || book?.portadaUrl || book?.imagen;
     if (!rawPath) return 'https://via.placeholder.com/150x200?text=Sin+Portada';
     
-    // Si ya es un enlace web completo (URL externa o Cloudinary), úsalo tal cual
+    // Si es un enlace web externo, úsalo tal cual
     if (rawPath.startsWith('http://') || rawPath.startsWith('https://')) {
       return rawPath;
     }
 
-    // 🟢 En producción (Vercel), apunta siempre al backend oficial de Render. 
-    // Solo usa localhost si estás corriendo el frontend localmente en tu PC.
-    const backendUrl = window.location.hostname === 'localhost' 
-      ? 'http://localhost:5000' 
-      : 'https://biblioteca-backend-9c1i.onrender.com';
-
+    // Apunta directamente al backend en Render para evitar errores de conexión local
+    const backendUrl = 'https://biblioteca-backend-9c1i.onrender.com';
     const cleanPath = rawPath.startsWith('/') ? rawPath : `/${rawPath}`;
     return `${backendUrl}${cleanPath}`;
   };
@@ -180,10 +177,8 @@ const getBookCoverUrl = (book) => {
 
                 <div className="book-info">
                   <h3 className="book-title">{book.titulo || 'Sin Título'}</h3>
-                  {/* 🟢 Muestra el autor correctamente */}
                   <p className="book-author">✍️ {book.autor || 'Autor desconocido'}</p>
                   
-                  {/* 🟢 Muestra la sinopsis si existe */}
                   {(book.descripcion || book.sinopsis) && (
                     <p className="book-description" style={{ fontSize: '0.85rem', color: '#94a3b8', margin: '4px 0' }}>
                       {book.descripcion || book.sinopsis}
@@ -246,7 +241,6 @@ const getBookCoverUrl = (book) => {
 
               <div className="form-group">
                 <label>Autor</label>
-                {/* 🟢 Conectado correctamente al estado */}
                 <input 
                   type="text" 
                   value={currentBook.autor} 
@@ -258,7 +252,6 @@ const getBookCoverUrl = (book) => {
 
               <div className="form-group">
                 <label>Sinopsis / Descripción</label>
-                {/* 🟢 Conectado correctamente al estado */}
                 <textarea 
                   rows="3"
                   value={currentBook.descripcion} 

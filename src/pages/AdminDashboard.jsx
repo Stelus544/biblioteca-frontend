@@ -112,27 +112,25 @@ export default function AdminDashboard() {
       setError('Error al actualizar usuario.');
     }
   };
+
+  // 🟢 FUNCIÓN ROBUSTA PARA LAS PORTADAS (Corregida para Render y URLs externas)
   const getBookCoverUrl = (book) => {
     const rawPath = book?.portada || book?.portadaUrl || book?.imagen;
     if (!rawPath) return 'https://via.placeholder.com/150x200?text=Sin+Portada';
     
-    // Si ya es un enlace web completo (URL externa o Cloudinary), úsalo tal cual
+    // Si ya es un enlace web completo (URL externa), úsalo tal cual
     if (rawPath.startsWith('http://') || rawPath.startsWith('https://')) {
       return rawPath;
     }
 
-    // 🟢 En producción (Vercel), apunta siempre al backend oficial de Render. 
-    // Solo usa localhost si estás corriendo el frontend localmente en tu PC.
-    const backendUrl = window.location.hostname === 'localhost' 
-      ? 'http://localhost:5000' 
-      : 'https://biblioteca-backend-9c1i.onrender.com';
-
+    // Apunta directamente al backend oficial de Render para evitar errores de conexión local en Vercel
+    const backendUrl = 'https://biblioteca-backend-9c1i.onrender.com';
     const cleanPath = rawPath.startsWith('/') ? rawPath : `/${rawPath}`;
     return `${backendUrl}${cleanPath}`;
   };
 
   // Crear Libro
-const handleCreateBook = async (e) => {
+  const handleCreateBook = async (e) => {
     e.preventDefault();
     setMessage('');
     setError('');
@@ -141,7 +139,7 @@ const handleCreateBook = async (e) => {
     try {
       const finalCategoria = categoria === 'Otro' ? customCategoria : categoria;
 
-      // Enviamos un objeto JSON limpio en lugar de FormData
+      // Enviamos un objeto JSON limpio
       const bookData = {
         titulo,
         autor,
@@ -149,7 +147,7 @@ const handleCreateBook = async (e) => {
         categoria: finalCategoria,
         clasificacion,
         stock: Number(stock),
-        portada: portadaUrl // Usamos directamente la URL proporcionada
+        portada: portadaUrl // URL proporcionada
       };
 
       const token = localStorage.getItem('token');
@@ -183,7 +181,10 @@ const handleCreateBook = async (e) => {
   const handleDeleteBook = async (bookId) => {
     if (!window.confirm('¿Seguro que deseas eliminar este libro?')) return;
     try {
-      await API.delete(`/books/${bookId}`);
+      const token = localStorage.getItem('token');
+      await API.delete(`/books/${bookId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setMessage('Libro eliminado.');
       fetchBooks();
     } catch (err) {
@@ -449,43 +450,15 @@ const handleCreateBook = async (e) => {
             </div>
 
             <div className="form-group">
-              <label>Portada</label>
-              <div className="radio-group">
-                <label>
-                  <input
-                    type="radio"
-                    name="imageType"
-                    checked={imageType === 'url'}
-                    onChange={() => setImageType('url')}
-                  />
-                  URL Enlace
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="imageType"
-                    checked={imageType === 'file'}
-                    onChange={() => setImageType('file')}
-                  />
-                  Subir Archivo
-                </label>
-              </div>
-            </div>
-
-            {imageType === 'url' ? (
+              <label>Portada (URL de la Imagen)</label>
               <input
                 type="url"
                 value={portadaUrl}
                 onChange={(e) => setPortadaUrl(e.target.value)}
-                placeholder="https://..."
+                placeholder="https://ejemplo.com/portada.jpg"
+                required
               />
-            ) : (
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setFile(e.target.files[0])}
-              />
-            )}
+            </div>
 
             <button type="submit" className="btn-primary" disabled={loading}>
               {loading ? 'Guardando...' : 'Guardar Libro'}
@@ -500,15 +473,17 @@ const handleCreateBook = async (e) => {
           <h3>Gestión del Catálogo de Libros</h3>
           <div className="admin-books-grid">
             {books.map((book) => {
-              const rawPath = book.portada || book.portadaUrl || '';
-              const imgUrl = rawPath.startsWith('http')
-                ? rawPath
-                : `http://localhost:5000${rawPath.startsWith('/') ? '' : '/'}${rawPath}`;
+              const imgUrl = getBookCoverUrl(book);
 
               return (
                 <div key={book._id} className="admin-book-card">
                   <div className="admin-book-cover-wrapper">
-                    <img src={imgUrl} alt={book.titulo} className="admin-book-cover" onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/150x200?text=Sin+Portada'; }} />
+                    <img 
+                      src={imgUrl} 
+                      alt={book.titulo} 
+                      className="admin-book-cover" 
+                      onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/150x200?text=Sin+Portada'; }} 
+                    />
                     <span className="stock-badge">
                       Ejemplares: {book.stock ?? book.ejemplares ?? 1}
                     </span>
