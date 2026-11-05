@@ -112,7 +112,24 @@ export default function AdminDashboard() {
       setError('Error al actualizar usuario.');
     }
   };
-  
+  const getBookCoverUrl = (book) => {
+    const rawPath = book?.portada || book?.portadaUrl || book?.imagen;
+    if (!rawPath) return 'https://via.placeholder.com/150x200?text=Sin+Portada';
+    
+    // Si ya es un enlace web completo (URL externa o Cloudinary), úsalo tal cual
+    if (rawPath.startsWith('http://') || rawPath.startsWith('https://')) {
+      return rawPath;
+    }
+
+    // 🟢 En producción (Vercel), apunta siempre al backend oficial de Render. 
+    // Solo usa localhost si estás corriendo el frontend localmente en tu PC.
+    const backendUrl = window.location.hostname === 'localhost' 
+      ? 'http://localhost:5000' 
+      : 'https://biblioteca-backend-9c1i.onrender.com';
+
+    const cleanPath = rawPath.startsWith('/') ? rawPath : `/${rawPath}`;
+    return `${backendUrl}${cleanPath}`;
+  };
 
   // Crear Libro
 const handleCreateBook = async (e) => {

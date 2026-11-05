@@ -126,11 +126,23 @@ export default function Catalog() {
 
   const getBookStock = (book) => parseInt(book.stock ?? book.ejemplares ?? book.copias ?? 0, 10);
 
-  const getBookCoverUrl = (book) => {
+const getBookCoverUrl = (book) => {
     const rawPath = book?.portada || book?.portadaUrl || book?.imagen;
     if (!rawPath) return 'https://via.placeholder.com/150x200?text=Sin+Portada';
-    if (rawPath.startsWith('http')) return rawPath;
-    return `https://biblioteca-backend-9c1i.onrender.com${rawPath.startsWith('/') ? '' : '/'}${rawPath}`;
+    
+    // Si ya es un enlace web completo (URL externa o Cloudinary), úsalo tal cual
+    if (rawPath.startsWith('http://') || rawPath.startsWith('https://')) {
+      return rawPath;
+    }
+
+    // 🟢 En producción (Vercel), apunta siempre al backend oficial de Render. 
+    // Solo usa localhost si estás corriendo el frontend localmente en tu PC.
+    const backendUrl = window.location.hostname === 'localhost' 
+      ? 'http://localhost:5000' 
+      : 'https://biblioteca-backend-9c1i.onrender.com';
+
+    const cleanPath = rawPath.startsWith('/') ? rawPath : `/${rawPath}`;
+    return `${backendUrl}${cleanPath}`;
   };
 
   if (loading) return <div className="loading-spinner">Cargando catálogo...</div>;
