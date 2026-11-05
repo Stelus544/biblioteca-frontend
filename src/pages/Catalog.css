@@ -1,3 +1,4 @@
+/* Contenedor principal del catálogo */
 .catalog-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -5,133 +6,225 @@
 }
 
 .catalog-header {
-  text-align: center;
   margin-bottom: 30px;
 }
 
 .catalog-header h2 {
   font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-color, #1e293b);
+  font-weight: 800;
+  color: var(--text-color, #ffffff);
+  margin: 0 0 6px 0;
 }
 
-/* Grid de Libros */
+.catalog-header p {
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* 🟢 GRILLA ROBUSTA (Evita estiramientos y desalineaciones) */
 .books-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 25px;
-  justify-content: center;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
 }
 
-/* Tarjeta individual */
+/* Tarjeta individual del libro */
 .book-card {
-  background-color: var(--card-bg, #ffffff);
-  border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: 12px;
-  padding: 16px;
+  background-color: var(--card-bg, #1e293b);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 14px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   position: relative;
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .book-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.35);
 }
 
+/* Badge de Disponibilidad / Stock */
 .book-badge {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  background-color: #2563eb;
-  color: #ffffff;
+  top: 14px;
+  right: 14px;
+  padding: 4px 10px;
+  border-radius: 20px;
   font-size: 0.75rem;
-  font-weight: 600;
-  padding: 4px 8px;
-  border-radius: 6px;
+  font-weight: 700;
   z-index: 2;
+  text-transform: uppercase;
 }
 
-/* Contenedor e Imagen de la Portada */
+.badge-available {
+  background-color: #10b981;
+  color: #ffffff;
+}
+
+.badge-empty {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+/* 🟢 CONTENEDOR DE PORTADA (Tamaño uniforme y controlado) */
 .book-cover-container {
   width: 100%;
-  height: 260px;
+  height: 220px;
+  background-color: #0f172a;
   border-radius: 8px;
   overflow: hidden;
-  background-color: #f1f5f9;
-  margin-bottom: 12px;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  margin-bottom: 14px;
 }
 
 .book-cover {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+  transition: transform 0.3s ease;
 }
 
-/* Textos de la tarjeta */
+.book-card:hover .book-cover {
+  transform: scale(1.03);
+}
+
+/* Información del Libro (Título, Autor, Etiquetas) */
 .book-info {
-  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-grow: 1;
+  margin-bottom: 16px;
 }
 
 .book-title {
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  color: var(--text-color, #0f172a);
-  margin: 0 0 4px 0;
+  color: var(--text-color, #ffffff);
+  margin: 0;
   line-height: 1.3;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .book-author {
-  font-size: 0.88rem;
-  color: var(--text-muted, #64748b);
+  font-size: 0.9rem;
+  color: #cbd5e1 !important;
   margin: 0;
+  font-weight: 500;
 }
 
-/* Botones */
+/* Etiquetas de categoría y clasificación */
+.book-meta-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.book-category-tag,
+.book-class-tag {
+  background-color: #334155;
+  color: #f8fafc;
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* Acciones y Botones */
 .book-actions {
   margin-top: auto;
 }
 
-.btn-primary, .btn-delete {
+.btn-primary {
   width: 100%;
   padding: 10px;
-  border-radius: 8px;
+  background-color: #2563eb;
+  color: #ffffff;
   border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.btn-primary {
-  background-color: #2563eb;
-  color: #ffffff;
-}
-
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   background-color: #1d4ed8;
 }
 
+.btn-primary:disabled {
+  background-color: #475569;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Grupo de botones de Admin (Editar / Eliminar) */
+.admin-btn-group {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.btn-edit {
+  flex: 1;
+  background-color: #d97706;
+  color: #ffffff;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-edit:hover {
+  background-color: #b45309;
+}
+
 .btn-delete {
-  background-color: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fecaca;
+  flex: 1;
+  background-color: #dc2626;
+  color: #ffffff;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .btn-delete:hover {
-  background-color: #dc2626;
-  color: #ffffff;
+  background-color: #b91c1c;
 }
-/* ==========================================
-   ESTILOS DEL CUADRO MODAL FLOTANTE
-   ========================================== */
 
+/* Estados vacíos o de carga */
+.no-books, .loading-spinner {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 50px;
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+.alert-danger {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* Modales */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -150,7 +243,7 @@
 .modal-content {
   background-color: #1e293b;
   border: 1px solid #334155;
-  padding: 30px;
+  padding: 24px;
   border-radius: 16px;
   width: 90%;
   max-width: 400px;
@@ -165,7 +258,6 @@
 
 .modal-icon {
   font-size: 2.5rem;
-  margin-bottom: 2px;
 }
 
 .modal-content h3 {
@@ -179,7 +271,6 @@
   margin: 0;
   color: #cbd5e1;
   font-size: 0.95rem;
-  line-height: 1.5;
 }
 
 .modal-btn {
@@ -193,11 +284,63 @@
   font-weight: 600;
   cursor: pointer;
   width: 100%;
-  transition: background-color 0.2s;
 }
 
-.modal-btn:hover {
-  background-color: #1d4ed8;
+.edit-modal-box {
+  max-width: 450px !important;
+  text-align: left !important;
+  align-items: stretch !important;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px 14px;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  background-color: #0f172a;
+  color: #ffffff;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.btn-secondary {
+  background-color: #475569;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  flex: 1;
+}
+
+.btn-secondary:hover {
+  background-color: #334155;
 }
 
 @keyframes fadeIn {

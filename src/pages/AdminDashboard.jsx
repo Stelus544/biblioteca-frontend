@@ -11,9 +11,13 @@ export default function AdminDashboard() {
   const [editedUsers, setEditedUsers] = useState({});
   const [books, setBooks] = useState([]);
 
-  // Crear Libro
+  // Crear Libro (Incluyendo Autor, Categoría y Clasificación Manual)
   const [titulo, setTitulo] = useState('');
+  const [autor, setAutor] = useState('');
   const [sinopsis, setSinopsis] = useState('');
+  const [categoria, setCategoria] = useState('Literatura');
+  const [customCategoria, setCustomCategoria] = useState('');
+  const [clasificacion, setClasificacion] = useState('');
   const [stock, setStock] = useState(1);
   const [imageType, setImageType] = useState('url');
   const [portadaUrl, setPortadaUrl] = useState('');
@@ -117,17 +121,24 @@ export default function AdminDashboard() {
     setLoading(true);
 
     try {
+      const finalCategoria = categoria === 'Otro' ? customCategoria : categoria;
+
       const formData = new FormData();
       formData.append('titulo', titulo);
+      formData.append('autor', autor);
       formData.append('sinopsis', sinopsis);
+      formData.append('descripcion', sinopsis); // Compatible con ambos nombres en backend
+      formData.append('categoria', finalCategoria);
+      formData.append('clasificacion', clasificacion);
       formData.append('stock', stock);
 
       if (imageType === 'file' && file) {
         formData.append('portada', file);
       } else if (imageType === 'url' && portadaUrl) {
         formData.append('portadaUrl', portadaUrl);
+        formData.append('portada', portadaUrl);
       } else {
-        setError('Proporciona una URL o selecciona un archivo.');
+        setError('Proporciona una URL o selecciona un archivo para la portada.');
         setLoading(false);
         return;
       }
@@ -138,7 +149,11 @@ export default function AdminDashboard() {
 
       setMessage('¡Libro agregado correctamente!');
       setTitulo('');
+      setAutor('');
       setSinopsis('');
+      setCategoria('Literatura');
+      setCustomCategoria('');
+      setClasificacion('');
       setStock(1);
       setPortadaUrl('');
       setFile(null);
@@ -304,7 +319,7 @@ export default function AdminDashboard() {
                       <td>
                         <input
                           type="text"
-                          value={userCurso}
+                          value={userCurso || ''}
                           onChange={(e) => handleUserChange(u._id, 'curso', e.target.value)}
                           className="input-table-edit"
                         />
@@ -353,6 +368,52 @@ export default function AdminDashboard() {
             </div>
 
             <div className="form-group">
+              <label>Autor</label>
+              <input
+                type="text"
+                value={autor}
+                onChange={(e) => setAutor(e.target.value)}
+                placeholder="Ej. Gabriel García Márquez"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Categoría</label>
+              <select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
+                <option value="Literatura">Literatura</option>
+                <option value="Religiosa">Religiosa</option>
+                <option value="Ciencia">Ciencia</option>
+                <option value="Historia">Historia</option>
+                <option value="Tecnología">Tecnología</option>
+                <option value="Otro">Otro (Escribir...)</option>
+              </select>
+            </div>
+
+            {categoria === 'Otro' && (
+              <div className="form-group">
+                <label>Escribe la Categoría</label>
+                <input
+                  type="text"
+                  value={customCategoria}
+                  onChange={(e) => setCustomCategoria(e.target.value)}
+                  placeholder="Ej: Filosofía, Arte..."
+                  required
+                />
+              </div>
+            )}
+
+            <div className="form-group">
+              <label>Clasificación Manual</label>
+              <input
+                type="text"
+                value={clasificacion}
+                onChange={(e) => setClasificacion(e.target.value)}
+                placeholder="Ej: 823.91, FICCION"
+              />
+            </div>
+
+            <div className="form-group">
               <label>Cantidad de Ejemplares (Stock)</label>
               <input
                 type="number"
@@ -369,6 +430,7 @@ export default function AdminDashboard() {
                 value={sinopsis}
                 onChange={(e) => setSinopsis(e.target.value)}
                 rows="4"
+                placeholder="Escribe una breve sinopsis..."
                 required
               />
             </div>
@@ -419,28 +481,36 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* PESTAÑA 4: CATÁLOGO DE LIBROS (REDISEÑADO) */}
+      {/* PESTAÑA 4: CATÁLOGO DE LIBROS */}
       {activeTab === 'manage-books' && (
         <div className="tab-content">
           <h3>Gestión del Catálogo de Libros</h3>
           <div className="admin-books-grid">
             {books.map((book) => {
-              const imgUrl = book.portada.startsWith('http')
-                ? book.portada
-                : `http://localhost:5000${book.portada}`;
+              const rawPath = book.portada || book.portadaUrl || '';
+              const imgUrl = rawPath.startsWith('http')
+                ? rawPath
+                : `http://localhost:5000${rawPath.startsWith('/') ? '' : '/'}${rawPath}`;
 
               return (
                 <div key={book._id} className="admin-book-card">
                   <div className="admin-book-cover-wrapper">
-                    <img src={imgUrl} alt={book.titulo} className="admin-book-cover" />
+                    <img src={imgUrl} alt={book.titulo} className="admin-book-cover" onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/150x200?text=Sin+Portada'; }} />
                     <span className="stock-badge">
-                      Ejemplares: {book.stock}
+                      Ejemplares: {book.stock ?? book.ejemplares ?? 1}
                     </span>
                   </div>
 
                   <div className="admin-book-details">
                     <h4 className="admin-book-title">{book.titulo}</h4>
-                    <p className="admin-book-synopsis">{book.sinopsis}</p>
+                    {book.autor && <p className="admin-book-author" style={{ fontSize: '0.88rem', color: '#cbd5e1', margin: '2px 0' }}>✍️ {book.autor}</p>}
+                    <p className="admin-book-synopsis">{book.sinopsis || book.descripcion}</p>
+                    
+                    <div className="book-meta-tags" style={{ display: 'flex', gap: '6px', margin: '8px 0', flexWrap: 'wrap' }}>
+                      {book.categoria && <span style={{ background: '#334155', color: '#f8fafc', fontSize: '0.75rem', padding: '2px 6px', borderRadius: '4px' }}>📂 {book.categoria}</span>}
+                      {book.clasificacion && <span style={{ background: '#334155', color: '#f8fafc', fontSize: '0.75rem', padding: '2px 6px', borderRadius: '4px' }}>🏷️ {book.clasificacion}</span>}
+                    </div>
+
                     <button
                       className="btn-delete-book"
                       onClick={() => handleDeleteBook(book._id)}
