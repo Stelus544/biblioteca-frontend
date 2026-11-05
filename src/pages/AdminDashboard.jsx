@@ -112,9 +112,10 @@ export default function AdminDashboard() {
       setError('Error al actualizar usuario.');
     }
   };
+  
 
   // Crear Libro
-  const handleCreateBook = async (e) => {
+const handleCreateBook = async (e) => {
     e.preventDefault();
     setMessage('');
     setError('');
@@ -123,28 +124,23 @@ export default function AdminDashboard() {
     try {
       const finalCategoria = categoria === 'Otro' ? customCategoria : categoria;
 
-      const formData = new FormData();
-      formData.append('titulo', titulo);
-      formData.append('autor', autor);
-      formData.append('sinopsis', sinopsis);
-      formData.append('descripcion', sinopsis); // Compatible con ambos nombres en backend
-      formData.append('categoria', finalCategoria);
-      formData.append('clasificacion', clasificacion);
-      formData.append('stock', stock);
+      // Enviamos un objeto JSON limpio en lugar de FormData
+      const bookData = {
+        titulo,
+        autor,
+        descripcion: sinopsis,
+        categoria: finalCategoria,
+        clasificacion,
+        stock: Number(stock),
+        portada: portadaUrl // Usamos directamente la URL proporcionada
+      };
 
-      if (imageType === 'file' && file) {
-        formData.append('portada', file);
-      } else if (imageType === 'url' && portadaUrl) {
-        formData.append('portadaUrl', portadaUrl);
-        formData.append('portada', portadaUrl);
-      } else {
-        setError('Proporciona una URL o selecciona un archivo para la portada.');
-        setLoading(false);
-        return;
-      }
-
-      await API.post('/books', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      const token = localStorage.getItem('token');
+      await API.post('/books', bookData, {
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` 
+        }
       });
 
       setMessage('¡Libro agregado correctamente!');
@@ -156,10 +152,10 @@ export default function AdminDashboard() {
       setClasificacion('');
       setStock(1);
       setPortadaUrl('');
-      setFile(null);
       fetchBooks();
       setActiveTab('manage-books');
     } catch (err) {
+      console.error(err);
       setError(err.response?.data?.mensaje || 'Error al crear el libro.');
     } finally {
       setLoading(false);
